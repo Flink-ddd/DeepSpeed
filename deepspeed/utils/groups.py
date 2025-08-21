@@ -618,10 +618,10 @@ def _get_data_parallel_world_size():
         return dist.get_world_size(mesh_device.get_group(mesh_dim="data_parallel"))
     global mpu
     if mpu is not None:
-        if hasattr(mpu, 'initialize_sequence_parallel'):
-            return None
-        else:
-            return mpu.get_data_parallel_world_size()
+        # Sequence parallelism is a form of tensor parallelism and should not
+        # prevent retrieving the data parallel world size. The mpu object
+        # is the source of truth when initialized.
+        return mpu.get_data_parallel_world_size()
     return dist.get_world_size(group=_get_data_parallel_group())
 
 
